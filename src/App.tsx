@@ -1,26 +1,57 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useReducer} from 'react';
 import './App.css';
+import {Context} from './Components/Context';
+import {ArrayType, InputBlock} from './Components/InputBlock/InputBlock';
+import {ResultBlock} from './Components/ResultBlock/ResultBlock';
+import {
+    changeAmountOfCreditAC,
+    changeCreditTermAC,
+    changeLoanRateAC, changePaymentTypeAC,
+    initialState,
+    stateReducer
+} from './Components/State/state';
+import {calculatorAPI} from './API/calculatorAPI';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    let [state, dispatch] = useReducer(stateReducer, initialState);
+
+    const changeSum = (sum: number) => {
+        dispatch(changeAmountOfCreditAC(sum));
+    };
+
+    const changeCreditTerm = (payload: ArrayType) => {
+        dispatch(changeCreditTermAC(payload));
+    };
+
+    const changePaymentType = (isAnnuityPayment: boolean) => {
+        dispatch(changePaymentTypeAC(isAnnuityPayment));
+    };
+
+    useEffect(() => {
+        calculatorAPI.getRefinancingRate()
+            .then(res => {
+                dispatch(changeLoanRateAC(res[res.length - 1].Value))
+            })
+    },[])
+
+    return (
+        <div>
+            <Context.Provider value={state}>
+
+                <div className='appContainer'>
+                    <InputBlock
+                        changeSum={changeSum}
+                        changeCreditTerm={changeCreditTerm}
+                        changePaymentType={changePaymentType}
+                    />
+                    <ResultBlock/>
+                </div>
+            </Context.Provider>
+
+        </div>
+    );
 }
 
 export default App;
