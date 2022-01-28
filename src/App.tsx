@@ -6,7 +6,7 @@ import {ResultBlock} from './Components/ResultBlock/ResultBlock';
 import {
     changeAmountOfCreditAC,
     changeCreditTermAC,
-    changeLoanRateAC, changePaymentTypeAC,
+    changeLoanRateAC, changePaymentTypeAC, changeStatusAC,
     initialState,
     stateReducer
 } from './Components/State/state';
@@ -16,6 +16,7 @@ import {calculatorAPI} from './API/calculatorAPI';
 function App() {
 
     let [state, dispatch] = useReducer(stateReducer, initialState);
+
 
     const changeSum = (sum: number) => {
         dispatch(changeAmountOfCreditAC(sum));
@@ -33,8 +34,15 @@ function App() {
         calculatorAPI.getRefinancingRate()
             .then(res => {
                 dispatch(changeLoanRateAC(res[res.length - 1].Value))
+                dispatch(changeStatusAC(true))
             })
     },[])
+
+    if (!state.isLoaded) {
+        return <div>Hello</div>
+    }
+
+    console.log('APP component');
 
     return (
         <div>
