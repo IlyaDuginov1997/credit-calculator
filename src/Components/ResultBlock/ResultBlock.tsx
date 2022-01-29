@@ -17,19 +17,19 @@ export type TableRowType = {
     loanBalance: number
 }
 
-export const ResultBlock = () => {
+const roundingAccuracy = 2;
 
+export const ResultBlock = () => {
         let [isOpenDetailsTable, setOpenDetailsTable] = useState(false);
 
         const state = useContext(Context);
-        const monthlyInterestRate = monthlyInterestRateFunc(state.loanRate);
-        const numberOfPayments = numberOfPaymentsFunc(state.creditTerm);
-        const mounthlyPayment = annuityCoefficientFunc(monthlyInterestRate, numberOfPayments) * state.amountOfCredit;
+        const {loanRate, creditTerm, amountOfCredit} = state
+        const monthlyInterestRate = monthlyInterestRateFunc(loanRate);
+        const numberOfPayments = numberOfPaymentsFunc(creditTerm);
+        const mounthlyPayment = annuityCoefficientFunc(monthlyInterestRate, numberOfPayments) * amountOfCredit;
 
         const totalPayout = mounthlyPayment * numberOfPayments;
-        const totalOverpayments = totalPayout - state.amountOfCredit;
-
-        console.log('ResultBlockComponent');
+        const totalOverpayments = totalPayout - amountOfCredit;
 
         const interestPaymentFunc = (loanBalance: number) => {
             return loanBalance * monthlyInterestRate;
@@ -46,9 +46,9 @@ export const ResultBlock = () => {
         let detailTableForAnnuity: TableRowType[] = [];
 
         for (let i = 1; i <= numberOfPayments; i++) {
-            const interestPayment = interestPaymentFunc(i === 1 ? state.amountOfCredit : detailTableForAnnuity[i - 2].loanBalance);
+            const interestPayment = interestPaymentFunc(i === 1 ? amountOfCredit : detailTableForAnnuity[i - 2].loanBalance);
             const principalPayment = principalPaymentFunc(interestPayment);
-            let loanBalance = loanBalanceFunc(i === 1 ? state.amountOfCredit : detailTableForAnnuity[i - 2].loanBalance, principalPayment);
+            let loanBalance = loanBalanceFunc(i === 1 ? amountOfCredit : detailTableForAnnuity[i - 2].loanBalance, principalPayment);
 
             if (i === numberOfPayments) {
                 loanBalance = 0;
@@ -75,22 +75,22 @@ export const ResultBlock = () => {
         return (
             <div>
                 <div className={s.inputBlockContainer}>
-                    <div>Сумма кредита - {roundingHelper(state.amountOfCredit, 2)}</div>
-                    <div>Ежемесячный платеж - {roundingHelper(mounthlyPayment, 2)}</div>
-                    <div>Общая сумма выплаты по кредиту - {roundingHelper(totalPayout, 2)}</div>
-                    <div>Общая сумма переплат по кредиту - {roundingHelper(totalOverpayments, 2)}</div>
+                    <div>Сумма кредита - {roundingHelper(amountOfCredit, roundingAccuracy)}</div>
+                    <div>Ежемесячный платеж - {roundingHelper(mounthlyPayment, roundingAccuracy)}</div>
+                    <div>Общая сумма выплаты по кредиту - {roundingHelper(totalPayout, roundingAccuracy)}</div>
+                    <div>Общая сумма переплат по кредиту - {roundingHelper(totalOverpayments, roundingAccuracy)}</div>
                     <button onClick={() => setOpenDetailsTable(!isOpenDetailsTable)}>Детали расчета</button>
                 </div>
-                {isOpenDetailsTable && <DetailsBlock
-                    detailTableForAnnuity={detailTableForAnnuity}
-                    totalPayout={totalPayout}
-                    totalInterestPayment={totalOverpayments}
-                    totalPrincipalPayment={state.amountOfCredit}
+                {isOpenDetailsTable && (
+                    <DetailsBlock
+                        detailTableForAnnuity={detailTableForAnnuity}
+                        totalPayout={totalPayout}
+                        totalInterestPayment={totalOverpayments}
+                        totalPrincipalPayment={amountOfCredit}
 
-                />}
-
+                    />
+                )}
             </div>
-
         );
     }
 ;

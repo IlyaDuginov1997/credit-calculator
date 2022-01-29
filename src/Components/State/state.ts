@@ -4,7 +4,6 @@ type ActionTypes = ReturnType<typeof changeAmountOfCreditAC>
     | ReturnType<typeof changePaymentTypeAC>
     | ReturnType<typeof changeStatusAC>
 
-
 export const initialState = {
     amountOfCredit: 10000,
     creditTerm: {
@@ -59,7 +58,6 @@ export function changePaymentTypeAC(isAnnuityPayment: boolean) {
 export function changeStatusAC(status: boolean) {
     return {type: 'CHANGE-STATUS', status,} as const;
 }
-
 
 export type StateType = typeof initialState
 

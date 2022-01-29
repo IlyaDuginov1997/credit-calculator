@@ -21,51 +21,63 @@ export type ArrayType = {
     isYear: boolean
 }
 
-export const InputBlock = (props: InputBlockPropsType) => {
+const optionArray: OptionsArrayType = [
+    {value: '1 месяц', id: 1, count: 1, isYear: false},
+    {value: '3 месяца', id: 2, count: 3, isYear: false},
+    {value: '6 месяцев', id: 3, count: 6, isYear: false},
+    {value: '1 год', id: 4, count: 1, isYear: true},
+    {value: '2 года', id: 5, count: 2, isYear: true},
+    {value: '5 лет', id: 6, count: 5, isYear: true},
+];
 
+export const InputBlock: React.FC<InputBlockPropsType> = ({
+                                                              changeSum,
+                                                              changeCreditTerm,
+                                                              changePaymentType,
+                                                              ...restProps
+                                                          }) => {
     const state = useContext(Context);
+    const {creditTerm, amountOfCredit, loanRate} = state;
     const changeAmountOf = (e: ChangeEvent<HTMLInputElement>) => {
-        props.changeSum(+e.currentTarget.value);
+        changeSum(+e.currentTarget.value);
     };
 
-    const optionArray: OptionsArrayType = [
-        {value: '1 месяц', id: 1, count: 1, isYear: false},
-        {value: '3 месяца', id: 2, count: 3, isYear: false},
-        {value: '6 месяцев', id: 3, count: 6, isYear: false},
-        {value: '1 год', id: 4, count: 1, isYear: true},
-        {value: '2 года', id: 5, count: 2, isYear: true},
-        {value: '5 лет', id: 6, count: 5, isYear: true},
-    ];
-
-    const optionArrayForJSX = optionArray.map(el => {
+    const optionArrayForJSX = optionArray.map(({value, id, count, isYear}) => {
         return (
-            <option value={el.value} key={el.id} selected={el.id === state.creditTerm.id}>{el.value}</option>
+            <option value={value} key={id} selected={id === creditTerm.id}>{value}</option>
         );
     });
 
-    const changeCreditTerm = (e: ChangeEvent<HTMLSelectElement>) => {
+    const changeCreditTermInfo = (e: ChangeEvent<HTMLSelectElement>) => {
         const creditTermEl = optionArray.find(el => el.value === e.currentTarget.value);
         if (creditTermEl) {
             let {id, count, isYear} = creditTermEl;
-            props.changeCreditTerm({id, count, isYear});
+            changeCreditTerm({id, count, isYear});
         }
+    };
+
+    const changeAnnuityPayment = () => {
+        changePaymentType(true);
+    };
+
+    const changeDifferentialPayment = () => {
+        changePaymentType(false);
     };
 
     return (
         <div className={s.inputBlockContainer}>
-            <input type='number' value={state.amountOfCredit}
-                   onChange={(e) => changeAmountOf(e)}/>
-            <select onChange={(changeCreditTerm)}>
+            <input type='number' value={amountOfCredit}
+                   onChange={changeAmountOf}/>
+            <select onChange={(changeCreditTermInfo)}>
                 {optionArrayForJSX}
             </select>
             <input
                 type='number'
-                value={state.loanRate}
-                onChange={() => console.log(state.loanRate)}
+                value={loanRate}
+                onChange={() => console.log(loanRate)}
             />
-            <button onClick={() => props.changePaymentType(true)}>Annuity payment</button>
-            <button onClick={() => props.changePaymentType(false)}>Differential payment</button>
-
+            <button onClick={changeAnnuityPayment}>Annuity payment</button>
+            <button onClick={changeDifferentialPayment}>Differential payment</button>
         </div>
     );
 };
