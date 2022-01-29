@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/credit-calculator/static/css/main.18eda754.css",
+    "main.js": "/credit-calculator/static/js/main.dbbab079.js",
+    "static/js/787.6b16e8fa.chunk.js": "/credit-calculator/static/js/787.6b16e8fa.chunk.js",
+    "index.html": "/credit-calculator/index.html",
+    "main.18eda754.css.map": "/credit-calculator/static/css/main.18eda754.css.map",
+    "main.dbbab079.js.map": "/credit-calculator/static/js/main.dbbab079.js.map",
+    "787.6b16e8fa.chunk.js.map": "/credit-calculator/static/js/787.6b16e8fa.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.18eda754.css",
+    "static/js/main.dbbab079.js"
+  ]
+}
