@@ -5,6 +5,9 @@ import {roundingHelper} from '../../Utils/Annuity loan helpers/RoundingHelpFunct
 
 type DetailsBlockPropsType = {
     detailTableForAnnuity: TableRowType[]
+    totalPayout: number
+    totalInterestPayment: number
+    totalPrincipalPayment: number
 }
 
 export const DetailsBlock = (props: DetailsBlockPropsType) => {
@@ -40,6 +43,16 @@ export const DetailsBlock = (props: DetailsBlockPropsType) => {
                         </tbody>
                     </table>
                 </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th colSpan={2}>Итого</th>
+                        <th>{roundingHelper(props.totalInterestPayment, 2)}</th>
+                        <th>{roundingHelper(props.totalPrincipalPayment, 2)}</th>
+                        <th>{roundingHelper(props.totalPayout, 2)}</th>
+                    </tr>
+                    </thead>
+                </table>
             </div>
 
         </div>
