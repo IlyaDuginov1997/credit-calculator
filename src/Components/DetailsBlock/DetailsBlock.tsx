@@ -1,7 +1,7 @@
 import React from 'react';
 import s from './DetailsBlock.module.css';
-import {TableRowType} from '../ResultBlock/ResultBlock';
-import {roundingHelper} from '../../Utils/Annuity loan helpers/RoundingHelpFunction';
+import {TableRowType} from '../../App';
+import {roundingHelper} from '../../Utils/Common/HelperFunctions';
 
 type DetailsBlockPropsType = {
     detailTableForAnnuity: TableRowType[]

@@ -3,8 +3,8 @@ import {
     changeCreditTermAC,
     changeLoanRateAC,
     changePaymentTypeAC,
-    changeStatusAC,
-    stateReducer
+    changeAppStatusAC,
+    stateReducer, changeDetailesTableStatusAC, CurrentDateType
 } from './state';
 
 type InitialStateType = {
@@ -16,7 +16,9 @@ type InitialStateType = {
     }
     loanRate: number
     isAnnuityPayment: boolean
-    isLoaded: boolean
+    appStatus: boolean
+    detailsTableStatus: boolean
+    currentDate: CurrentDateType
 };
 
 let startState = {} as InitialStateType;
@@ -30,7 +32,13 @@ beforeEach(() => {
             },
             loanRate: 9.25,
             isAnnuityPayment: true,
-            isLoaded: false
+            appStatus: false,
+            detailsTableStatus: false,
+            currentDate: {
+                day: 1,
+                month: 1,
+                year: 2020,
+            }
         };
     }
 );
@@ -68,8 +76,14 @@ test('calculator-mode will be change not a annuity payment', () => {
     expect(endState.isAnnuityPayment).toBeFalsy()
 });
 
-test('app ctatus will be changed', () => {
-    const endState = stateReducer(startState, changeStatusAC(true));
-    expect(startState.isLoaded).toBeFalsy()
-    expect(endState.isLoaded).toBeTruthy()
+test('app status will be changed', () => {
+    const endState = stateReducer(startState, changeAppStatusAC(true));
+    expect(startState.appStatus).toBeFalsy()
+    expect(endState.appStatus).toBeTruthy()
+});
+
+test('status of details table will be changed', () => {
+    const endState = stateReducer(startState, changeDetailesTableStatusAC(true));
+    expect(startState.detailsTableStatus).toBeFalsy()
+    expect(endState.detailsTableStatus).toBeTruthy()
 });

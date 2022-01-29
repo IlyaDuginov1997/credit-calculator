@@ -1,29 +1,25 @@
 import React, {useContext, useState} from 'react';
-import s from './ResultBlock.module.css';
-import {Context} from '../Context';
+import s from './AnnuityResultBlock.module.css';
+import {Context} from '../../Context';
 import {
     annuityCoefficientFunc,
     monthlyInterestRateFunc,
-    numberOfPaymentsFunc
-} from '../../Utils/Annuity loan helpers/HelperFunctions';
-import {DetailsBlock} from '../DetailsBlock/DetailsBlock';
-import {roundingHelper} from '../../Utils/Annuity loan helpers/RoundingHelpFunction';
+} from '../../../Utils/AnnuityLoanHelpers/AnnuityCalculationHelper';
+import {DetailsBlock} from '../../DetailsBlock/DetailsBlock';
+import {TableRowType} from '../../../App';
+import {loanBalanceFunc, numberOfPaymentsFunc, roundingHelper} from '../../../Utils/Common/HelperFunctions';
 
-export type TableRowType = {
-    number: number
-    interestPayment: number
-    principalPayment: number
-    mounthlyPayment: number
-    loanBalance: number
+type ResultBlockPropsType = {
+    changeDetailsTableStatus: (status: boolean) => void
 }
 
 const roundingAccuracy = 2;
 
-export const ResultBlock = () => {
+export const AnnuityResultBlock: React.FC<ResultBlockPropsType> = ({changeDetailsTableStatus, ...prestProps}) => {
         let [isOpenDetailsTable, setOpenDetailsTable] = useState(false);
 
         const state = useContext(Context);
-        const {loanRate, creditTerm, amountOfCredit} = state
+        const {loanRate, creditTerm, amountOfCredit, detailsTableStatus} = state;
         const monthlyInterestRate = monthlyInterestRateFunc(loanRate);
         const numberOfPayments = numberOfPaymentsFunc(creditTerm);
         const mounthlyPayment = annuityCoefficientFunc(monthlyInterestRate, numberOfPayments) * amountOfCredit;
@@ -39,11 +35,7 @@ export const ResultBlock = () => {
             return mounthlyPayment - interestPayment;
         };
 
-        const loanBalanceFunc = (loanBalance: number, principalPayment: number) => {
-            return loanBalance - principalPayment;
-        };
-
-        let detailTableForAnnuity: TableRowType[] = [];
+                let detailTableForAnnuity: TableRowType[] = [];
 
         for (let i = 1; i <= numberOfPayments; i++) {
             const interestPayment = interestPaymentFunc(i === 1 ? amountOfCredit : detailTableForAnnuity[i - 2].loanBalance);
@@ -65,6 +57,10 @@ export const ResultBlock = () => {
             detailTableForAnnuity.push(objInCycle);
         }
 
+        const showCloseDetailsTable = () => {
+            changeDetailsTableStatus(!detailsTableStatus);
+        };
+
         // // to check that everything is correct
         // // checkingValueTotalOverpayments === totalOverpayments
         // const checkingValueTotalOverpayments = detailTableForAnnuity.reduce( (acc: number, el: TableRowType) => {
@@ -79,9 +75,9 @@ export const ResultBlock = () => {
                     <div>Ежемесячный платеж - {roundingHelper(mounthlyPayment, roundingAccuracy)}</div>
                     <div>Общая сумма выплаты по кредиту - {roundingHelper(totalPayout, roundingAccuracy)}</div>
                     <div>Общая сумма переплат по кредиту - {roundingHelper(totalOverpayments, roundingAccuracy)}</div>
-                    <button onClick={() => setOpenDetailsTable(!isOpenDetailsTable)}>Детали расчета</button>
+                    <button onClick={showCloseDetailsTable}>Детали расчета</button>
                 </div>
-                {isOpenDetailsTable && (
+                {detailsTableStatus && (
                     <DetailsBlock
                         detailTableForAnnuity={detailTableForAnnuity}
                         totalPayout={totalPayout}

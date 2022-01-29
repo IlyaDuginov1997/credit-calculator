@@ -76,8 +76,8 @@ export const InputBlock: React.FC<InputBlockPropsType> = ({
                 value={loanRate}
                 onChange={() => console.log(loanRate)}
             />
-            <button onClick={changeAnnuityPayment}>Annuity payment</button>
-            <button onClick={changeDifferentialPayment}>Differential payment</button>
+            <button onClick={changeAnnuityPayment}>Аннуитетный платеж</button>
+            <button onClick={changeDifferentialPayment}>Дифференциальный платеж</button>
         </div>
     );
 };

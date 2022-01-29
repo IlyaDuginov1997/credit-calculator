@@ -2,15 +2,25 @@ import React, {useEffect, useReducer} from 'react';
 import './App.css';
 import {Context} from './Components/Context';
 import {ArrayType, InputBlock} from './Components/InputBlock/InputBlock';
-import {ResultBlock} from './Components/ResultBlock/ResultBlock';
+import {AnnuityResultBlock} from './Components/ResultBlock/AnnuityResultBlock/AnnuityResultBlock';
 import {
     changeAmountOfCreditAC,
     changeCreditTermAC,
-    changeLoanRateAC, changePaymentTypeAC, changeStatusAC,
+    changeLoanRateAC, changePaymentTypeAC, changeAppStatusAC,
     initialState,
-    stateReducer
+    stateReducer, changeDetailesTableStatusAC, initializeCurrentDateAC
 } from './Components/State/state';
 import {calculatorAPI} from './API/calculatorAPI';
+import {DifferencialResultBlock} from './Components/ResultBlock/DifferencialResultBlock/DifferencialResultBlock';
+import {dateInitialization} from './Utils/Common/HelperFunctions';
+
+export type TableRowType = {
+    number: number
+    interestPayment: number
+    principalPayment: number
+    mounthlyPayment: number
+    loanBalance: number
+}
 
 function App() {
     const [state, dispatch] = useReducer(stateReducer, initialState);
@@ -27,20 +37,27 @@ function App() {
         dispatch(changePaymentTypeAC(isAnnuityPayment));
     };
 
+    const changeDetailsTableStatus = (status: boolean) => {
+        dispatch(changeDetailesTableStatusAC(status))
+    }
+
     useEffect(() => {
         calculatorAPI.getRefinancingRate()
             .then(res => {
                 dispatch(changeLoanRateAC(res[res.length - 1].Value));
                 if (res) {
-                    dispatch(changeStatusAC(true));
+                    dispatch(changeAppStatusAC(true));
                 }
             });
+            dispatch(initializeCurrentDateAC(dateInitialization()))
     }, []);
-    if (!state.isLoaded) {
+
+    if (!state.appStatus) {
         // plug
         return <div>Preloader</div>;
     }
 
+    console.log(state.currentDate);
     return (
         <div>
             <Context.Provider value={state}>
@@ -50,7 +67,11 @@ function App() {
                         changeCreditTerm={changeCreditTerm}
                         changePaymentType={changePaymentType}
                     />
-                    <ResultBlock/>
+                    {state.isAnnuityPayment
+                        ? <AnnuityResultBlock changeDetailsTableStatus={changeDetailsTableStatus}/>
+                        : <DifferencialResultBlock changeDetailsTableStatus={changeDetailsTableStatus}/>
+                    }
+
                 </div>
             </Context.Provider>
         </div>
