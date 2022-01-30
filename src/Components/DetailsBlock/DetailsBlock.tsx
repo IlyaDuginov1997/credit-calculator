@@ -26,6 +26,7 @@ export const DetailsBlock: React.FC<DetailsBlockPropsType> = ({
                     <thead>
                     <tr>
                         <th>Порядок номера платежа</th>
+                        <th>Дата платежа</th>
                         <th>Остаток кредита</th>
                         <th>Платеж по процентам %</th>
                         <th>Платеж по основному долгу</th>
@@ -39,6 +40,7 @@ export const DetailsBlock: React.FC<DetailsBlockPropsType> = ({
                         {detailTableForAnnuity.map(
                             ({
                                  number,
+                                 paymentDate,
                                  loanBalance,
                                  interestPayment,
                                  principalPayment,
@@ -48,6 +50,7 @@ export const DetailsBlock: React.FC<DetailsBlockPropsType> = ({
                                 return (
                                     <tr>
                                         <td>{number}</td>
+                                        <td>{paymentDate}</td>
                                         <td>{roundingHelper(loanBalance, roundingAccuracy)}</td>
                                         <td>{roundingHelper(interestPayment, roundingAccuracy)}</td>
                                         <td>{roundingHelper(principalPayment, roundingAccuracy)}</td>

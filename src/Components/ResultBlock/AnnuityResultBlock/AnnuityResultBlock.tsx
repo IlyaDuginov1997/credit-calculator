@@ -7,7 +7,12 @@ import {
 } from '../../../Utils/AnnuityLoanHelpers/AnnuityCalculationHelper';
 import {DetailsBlock} from '../../DetailsBlock/DetailsBlock';
 import {TableRowType} from '../../../App';
-import {loanBalanceFunc, numberOfPaymentsFunc, roundingHelper} from '../../../Utils/Common/HelperFunctions';
+import {
+    calendarFunc,
+    loanBalanceFunc,
+    numberOfPaymentsFunc,
+    roundingHelper
+} from '../../../Utils/Common/HelperFunctions';
 
 type ResultBlockPropsType = {
     changeDetailsTableStatus: (status: boolean) => void
@@ -19,10 +24,12 @@ export const AnnuityResultBlock: React.FC<ResultBlockPropsType> = ({changeDetail
         let [isOpenDetailsTable, setOpenDetailsTable] = useState(false);
 
         const state = useContext(Context);
-        const {loanRate, creditTerm, amountOfCredit, detailsTableStatus} = state;
+        const {loanRate, creditTerm, amountOfCredit, detailsTableStatus, currentDate} = state;
         const monthlyInterestRate = monthlyInterestRateFunc(loanRate);
         const numberOfPayments = numberOfPaymentsFunc(creditTerm);
         const mounthlyPayment = annuityCoefficientFunc(monthlyInterestRate, numberOfPayments) * amountOfCredit;
+
+        const calendarDetailsForCredit = calendarFunc(currentDate, numberOfPayments);
 
         const totalPayout = mounthlyPayment * numberOfPayments;
         const totalOverpayments = totalPayout - amountOfCredit;
@@ -35,7 +42,7 @@ export const AnnuityResultBlock: React.FC<ResultBlockPropsType> = ({changeDetail
             return mounthlyPayment - interestPayment;
         };
 
-                let detailTableForAnnuity: TableRowType[] = [];
+        let detailTableForAnnuity: TableRowType[] = [];
 
         for (let i = 1; i <= numberOfPayments; i++) {
             const interestPayment = interestPaymentFunc(i === 1 ? amountOfCredit : detailTableForAnnuity[i - 2].loanBalance);
@@ -46,12 +53,18 @@ export const AnnuityResultBlock: React.FC<ResultBlockPropsType> = ({changeDetail
                 loanBalance = 0;
             }
 
-            const objInCycle = {
+            const {day, month, year} = calendarDetailsForCredit[i - 1].date;
+
+            const paymentDay = day > 9 ? '' + day : '0' + day;
+            const paymentDate = paymentDay + '.' + ((month > 9) ? month : '0' + month) + '.' + year;
+
+            const objInCycle: TableRowType = {
                 number: i,
-                interestPayment: interestPayment,
-                principalPayment: principalPayment,
-                mounthlyPayment: mounthlyPayment,
-                loanBalance: loanBalance,
+                paymentDate,
+                interestPayment,
+                principalPayment,
+                mounthlyPayment,
+                loanBalance,
             };
 
             detailTableForAnnuity.push(objInCycle);

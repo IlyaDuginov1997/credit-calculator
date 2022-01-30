@@ -8,7 +8,7 @@ import {
     changeCreditTermAC,
     changeLoanRateAC, changePaymentTypeAC, changeAppStatusAC,
     initialState,
-    stateReducer, changeDetailesTableStatusAC, initializeCurrentDateAC
+    stateReducer, changeDetailesTableStatusAC, initializeCurrentDateAC, CurrentDateType
 } from './Components/State/state';
 import {calculatorAPI} from './API/calculatorAPI';
 import {DifferencialResultBlock} from './Components/ResultBlock/DifferencialResultBlock/DifferencialResultBlock';
@@ -20,6 +20,7 @@ export type TableRowType = {
     principalPayment: number
     mounthlyPayment: number
     loanBalance: number
+    paymentDate: string
 }
 
 function App() {

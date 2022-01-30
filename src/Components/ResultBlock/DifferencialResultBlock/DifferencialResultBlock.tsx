@@ -3,7 +3,12 @@ import s from './DifferencialResultBlock.module.css';
 import {Context} from '../../Context';
 import {DetailsBlock} from '../../DetailsBlock/DetailsBlock';
 import {TableRowType} from '../../../App';
-import {loanBalanceFunc, numberOfPaymentsFunc, roundingHelper} from '../../../Utils/Common/HelperFunctions';
+import {
+    calendarFunc,
+    loanBalanceFunc,
+    numberOfPaymentsFunc,
+    roundingHelper
+} from '../../../Utils/Common/HelperFunctions';
 import {
     intermediatePrincipalDebtFunc,
     mounthlyPrincipalRepaymentFunc
@@ -14,17 +19,19 @@ type ResultBlockPropsType = {
 }
 
 const roundingAccuracy = 2;
+const daysInYear = 365;
 
 export const DifferencialResultBlock: React.FC<ResultBlockPropsType> = ({changeDetailsTableStatus, ...prestProps}) => {
 
         const state = useContext(Context);
-        const {loanRate, creditTerm, amountOfCredit, detailsTableStatus} = state;
+        const {loanRate, creditTerm, amountOfCredit, detailsTableStatus, currentDate} = state;
 
         const numberOfPayments = numberOfPaymentsFunc(creditTerm);
         const principalPayment = mounthlyPrincipalRepaymentFunc(amountOfCredit, numberOfPayments);
 
+        const calendarDetailsForCredit = calendarFunc(currentDate, numberOfPayments);
+
         const interestPaymentFunc = (intermediatePrincipalDebt: number, daysInYear: number, daysInMounth: number) => {
-            // debugger
             return intermediatePrincipalDebt / daysInYear * daysInMounth;
         };
 
@@ -43,7 +50,11 @@ export const DifferencialResultBlock: React.FC<ResultBlockPropsType> = ({changeD
                     : principalPayment,
                 loanRate);
 
-            const interestPayment = interestPaymentFunc(intermediatePrincipalDebt, 365, 30);
+            const interestPayment = interestPaymentFunc(
+                intermediatePrincipalDebt,
+                daysInYear,
+                calendarDetailsForCredit[i - 1].daysPeriodBetweenMont
+            );
             const mounthlyPayment = mounthlyPaymentFunc(principalPayment, interestPayment);
             let loanBalance = loanBalanceFunc(i === 1
                 ? amountOfCredit
@@ -54,12 +65,17 @@ export const DifferencialResultBlock: React.FC<ResultBlockPropsType> = ({changeD
                 loanBalance = 0;
             }
 
-            const objInCycle = {
+            const {day, month, year} = calendarDetailsForCredit[i - 1].date;
+            const paymentDay = day > 9 ? '' + day : '0' + day;
+            const paymentDate = paymentDay + '.' + ((month > 9) ? month : '0' + month) + '.' + year;
+
+            const objInCycle: TableRowType = {
                 number: i,
-                interestPayment: interestPayment,
-                principalPayment: principalPayment,
-                mounthlyPayment: mounthlyPayment,
-                loanBalance: loanBalance,
+                paymentDate,
+                interestPayment,
+                principalPayment,
+                mounthlyPayment,
+                loanBalance,
             };
 
             detailTableForAnnuity.push(objInCycle);
@@ -96,7 +112,6 @@ export const DifferencialResultBlock: React.FC<ResultBlockPropsType> = ({changeD
                         totalPayout={totalPayout}
                         totalInterestPayment={totalOverpayments}
                         totalPrincipalPayment={amountOfCredit}
-
                     />
                 )}
             </div>
